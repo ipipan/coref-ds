@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "coref-ds"
+version = "0.1.0"
+description = "Coreference Resolution API for dataset formats"
+authors = ["Karol Saputa <karol.saputa@gmail.com>"]
+readme = "README.md"
+packages = [{include = "coref_ds"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+lxml = "^4.9.2"
+udapi = {git = "https://github.com/k-sap/udapi-python"}
+python-dotenv = "^1.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
