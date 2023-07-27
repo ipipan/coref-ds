@@ -11,6 +11,7 @@ class TestCcl(unittest.TestCase):
     def test_load(self):
         doc = CclDoc(Path(str(local_config['KPWR_ROOT'])) / '00100508.xml')
         print(doc.doc_path)
+        self.assertEqual(doc.segments[-2], 'osób')
         self.assertEqual(len(doc.segments), 26)
         self.assertEqual(doc.segments_meta[-1].pos, 'interp')
         self.assertEqual(doc.segments_meta[-2].lemma, 'osoba')

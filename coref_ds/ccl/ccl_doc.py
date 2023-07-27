@@ -27,7 +27,7 @@ class CclDoc:
                     segments.append(segment.xpath('orth/text()')[0])
                     segment_meta = SegmentMeta(
                         orth=segment.xpath('orth/text()')[0],
-                        pos=segment.xpath('lex/ctag/text()')[0],
+                        pos=segment.xpath('lex/ctag/text()')[0] if segment.xpath('lex/ctag/text()') else 'X',
                         lemma=segment.xpath('lex/base/text()')[0],
                         has_nps=False,
                         last_in_sent= True if ind == len(sent_tokens) - 1 else False,
