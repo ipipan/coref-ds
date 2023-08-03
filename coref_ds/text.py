@@ -2,7 +2,16 @@ from dataclasses import dataclass
 
 @dataclass
 class SegmentMeta:
-    pass
+    orth: str
+    lemma: str
+    has_nps: bool
+    last_in_sent: bool | None = None
+    last_in_par: bool | None = None
+    pos: str | None = None
+    number: str| None = None
+    gender: str| None = None
+    person: str | None = None
+
 
 class Text:
     def __init__(
