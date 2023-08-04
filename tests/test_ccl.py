@@ -9,10 +9,10 @@ from coref_ds.ccl.ccl_doc import CclDoc
 
 class TestCcl(unittest.TestCase):
     def test_load(self):
-        doc = CclDoc(Path(str(local_config['KPWR_ROOT'])) / '00100508.xml')
-        print(doc.doc_path)
-        self.assertEqual(doc.segments[-2], 'osób')
+        doc = CclDoc.from_file(Path(str(local_config['KPWR_ROOT'])) / '00100508.xml')
+        print(doc.doc_id)
+        self.assertEqual(str(doc.segments[-2]), 'osób')
         self.assertEqual(len(doc.segments), 26)
-        self.assertEqual(doc.segments_meta[-1].pos, 'interp')
-        self.assertEqual(doc.segments_meta[-2].lemma, 'osoba')
+        self.assertEqual(doc.segments[-1].pos, 'interp')
+        self.assertEqual(doc.segments[-2].lemma, 'osoba')
         self.assertEqual(doc.text.segments_meta[-1].pos, 'interp')
