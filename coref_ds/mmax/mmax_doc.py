@@ -1,27 +1,73 @@
-
 from collections import defaultdict
 from dataclasses import dataclass
+from io import StringIO
 from pathlib import Path
 
 from lxml import etree
 from lxml.etree import _Element
 
-from pathlib import Path
 from coref_ds.document import CorefDoc
-from coref_ds.mmax.markable import Markable
-from coref_ds.mmax.word import Word
+from coref_ds.mmax.markable import Markable, gen_mentions_structure
+from coref_ds.mmax.word import Word, gen_words_structure
 from coref_ds.text import Text, Segment
+from coref_ds.utils import add_element
 
-NSMAP = {
-    'xlmns': 'www.eml.org/NameSpaces/mention'
-}
+
+NSMAP = {'xlmns': 'www.eml.org/NameSpaces/mention'}
+
 
 @dataclass
 class MmaxFiles:
     mmax: _Element
-    mentions:_Element
-    words:_Element
-    bak_mentions:_Element = None
+    mentions: _Element
+    words: _Element
+    bak_mentions: _Element = None
+
+
+def gen_mmax_schema(doc_id):
+    schema = f"""<?xml version="1.0" standalone="no"?>
+    <mmax_project>
+    <words>{doc_id}_words.xml</words>
+    <title val=""/>
+    <catRef val=""/>
+    </mmax_project>"""
+    xml = etree.parse(StringIO(schema))
+
+    return xml
+
+
+def add_cluster_mentions(text: Text):
+    mentions = []
+    men_id = 0
+    if text is not None:
+        for cluster_id, cluster in enumerate(text.clusters):
+            if len(cluster.mentions) == 1:
+                cluster_id = 'empty'
+            else:
+                cluster_id = f'set_{str(cluster_id)}'
+
+            for mention in cluster.mentions:
+                men_id += 1
+
+                head = mention.head if getattr(mention, 'head', None) else None
+                m = Markable(
+                    cluster_id=cluster_id,
+                    men_id=f'markable_{men_id}',
+                    span_start=mention.org_inds[0],
+                    span_end=mention.org_inds[1],
+                    head=head,
+                )
+                mentions.append(m)
+    return mentions
+
+
+def write_mmax_schema(mmax_schema: etree._Element, doc_id: str, doc_dir: Path):
+    with open(Path(doc_dir) / f'{doc_id}.mmax', 'wb') as output_file:
+        output_file.write(
+            etree.tostring(
+                mmax_schema, pretty_print=True, xml_declaration=True, encoding='utf-8'
+            )
+        )
 
 
 class MmaxDoc(CorefDoc):
@@ -43,7 +89,7 @@ class MmaxDoc(CorefDoc):
             mmax=etree.parse(p),
             mentions=etree.parse(p.parent / f'{doc_id}_mentions.xml'),
             words=etree.parse(p.parent / f'{doc_id}_words.xml'),
-            bak_mentions=bak_mentions
+            bak_mentions=bak_mentions,
         )
 
     @classmethod
@@ -59,8 +105,31 @@ class MmaxDoc(CorefDoc):
             mentions.extend(cls.parse_mentions(mmax_files.bak_mentions))
         return cls(doc_id, words, mentions)
 
-    def to_file(self, filename: Path):
-        pass  # @TODO
+    def to_file(self, dir: Path):
+        mmax_files = MmaxFiles(
+            mmax=gen_mmax_schema(self.doc_id),
+            mentions=gen_mentions_structure(),
+            words=gen_words_structure(),
+        )
+        for word_id, word in enumerate(self.words):
+            word.to_xml(mmax_files.words.getroot(), word_id)
+
+        for mention_id, mention in enumerate(self.mentions):
+            mention.to_xml(mmax_files.mentions.getroot())
+
+        with open(Path(dir) / f'{self.doc_id}_words.xml', 'wb') as output_file:
+            output_file.write(
+                etree.tostring(
+                    mmax_files.words, pretty_print=True, xml_declaration=True, encoding='utf-8'
+                )
+            )
+        with open(Path(dir) / f'{self.doc_id}_mentions.xml', 'wb') as output_file:
+            output_file.write(
+                etree.tostring(
+                    mmax_files.mentions, pretty_print=True, xml_declaration=True, encoding='utf-8'
+                )
+            )
+        write_mmax_schema(mmax_files.mmax, self.doc_id, dir)
 
     @staticmethod
     def parse_words(words_tree: etree._Element):

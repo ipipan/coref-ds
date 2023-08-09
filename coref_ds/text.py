@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class Segment:
     orth: str
@@ -8,11 +9,20 @@ class Segment:
     last_in_sent: bool | None = None
     last_in_par: bool | None = None
     pos: str | None = None
-    number: str| None = None
-    gender: str| None = None
+    number: str | None = None
+    gender: str | None = None
     person: str | None = None
     id: str | None = None
     is_semantic_head: bool | None = None
+
+
+@dataclass
+class Mention:
+    cluster_id: int
+    mention_id: int
+    span_start: int
+    span_end: int
+    head: str | None = None
 
 
 class Text:
@@ -35,13 +45,13 @@ class Text:
         for cluster in self.clusters:
             cluster_str = []
             for span in cluster:
-                cluster_str.append(
-                    tuple(self.segments[span[0] : span[1] + 1])
-                    )
-            clusters_str.append(cluster_str)
+                start, *end = span
+                end = end[0] if end else start
+                cluster_str.append(tuple(self.segments[start : end + 1]))
+            clusters_str.append(tuple(cluster_str))
 
-        return clusters_str
-    
+        return tuple(clusters_str)
+
     def print_clusters(self):
         for cluster in self.clusters_str:
             for mention in cluster:

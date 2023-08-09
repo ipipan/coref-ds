@@ -19,3 +19,10 @@ class TestMmax(unittest.TestCase):
         # print(doc.text.print_clusters())
         all_mentions = set(mention for cluster in doc.text.clusters_str for mention in cluster)
         self.assertTrue(('ja', ',', 'który', 'śpię', ',', 'kiedy', 'otello', 'morduje', 'desdemonę') in all_mentions)
+
+    def test_write(self):
+        doc = MmaxDoc.from_file(Path(str(local_config['NKJP_MMAX_ROOT'])) / '0_anotowane' /'030-2-000000012.mmax')
+        doc.to_file(Path('/tmp/'))
+        doc2 = MmaxDoc.from_file(Path('/tmp/030-2-000000012.mmax'))
+        self.assertEqual(doc.text.segments, doc2.text.segments)
+        self.assertEqual(doc.text.clusters_str, doc2.text.clusters_str)
