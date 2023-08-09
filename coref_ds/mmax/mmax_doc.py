@@ -21,7 +21,7 @@ class MmaxFiles:
     mmax: _Element
     mentions: _Element
     words: _Element
-    bak_mentions: _Element = None
+    bak_mentions: _Element = None  # @TODO: what is the relation between mentions file and bak_mentions file?
 
 
 def gen_mmax_schema(doc_id):
