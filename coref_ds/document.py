@@ -31,4 +31,3 @@ class CorefDoc:
     @abstractmethod
     def text(self) -> Text:
         pass
-    
