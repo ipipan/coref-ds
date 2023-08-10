@@ -12,6 +12,8 @@ lxml = "^4.9.2"
 udapi = {git = "https://github.com/k-sap/udapi-python"}
 python-dotenv = "^1.0.0"
 ipykernel = "^6.25.0"
+regex = "^2023.8.8"
+pyyaml = "^6.0.1"
 
 
 [build-system]
