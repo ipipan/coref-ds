@@ -26,3 +26,10 @@ class TestMmax(unittest.TestCase):
         doc2 = MmaxDoc.from_file(Path('/tmp/030-2-000000012.mmax'))
         self.assertEqual(doc.text.segments, doc2.text.segments)
         self.assertEqual(doc.text.clusters_str, doc2.text.clusters_str)
+
+    def test_semantic_head_read(self):
+        doc = MmaxDoc.from_file(Path(str(local_config['NKJP_MMAX_ROOT'])) / '0_anotowane' /'030-2-000000012.mmax')
+        print(doc.doc_id)
+        print(
+            list([men.mention_head] for men in doc.mentions)
+        )

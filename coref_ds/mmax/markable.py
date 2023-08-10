@@ -44,7 +44,6 @@ class Markable:
     supporting_other_facet: str
     span_start: int | None = None
     span_end: int | None = None
-    head: str | None = None
 
     @staticmethod
     def gen_span_attr(span_start: int, span_end: int):
@@ -102,7 +101,7 @@ class Markable:
                 'excluding_polysemy_facet':'none',
                 'excluding_negation':'empty',
                 'supporting_metareference_facet':'none',
-                'mention_head': self.head if self.head else '',
+                'mention_head': self.mention_head if self.mention_head else '',
                 'mention_type':'system',
                 'near_identity_facet':'none',
                 'supporting_other':'empty',
