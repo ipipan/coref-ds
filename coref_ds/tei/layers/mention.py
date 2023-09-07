@@ -1,6 +1,8 @@
+from lxml import etree
+
 from coref_ds.tei.layers.layer import XMLLayer
 from coref_ds.tei.mention import Mention
-from coref_ds.tei.utils import get_feature_val, to_text, word_to_ignore
+from coref_ds.tei.utils import get_feature_val, remove_if_no_children, to_text, word_to_ignore
 
 
 class MentionLayer(XMLLayer):
@@ -55,3 +57,13 @@ class MentionLayer(XMLLayer):
             mentions.append(mention)
 
         return mentions
+    
+    def remove_mentions(self):
+        for mention, mnt_id, par_id in self.mention_nodes():
+            parent = mention.getparent()
+            parent.remove(mention)
+
+    def add_mention(self, mention: Mention, segments):
+        p_el = self.root.xpath("//tei:p", namespaces=self.ns_map)[0] # assumes there is only one <p/>
+        p_el.append(etree.Comment(mention.text))
+        p_el.append(mention.to_xml(self.ns_map['xmlns'], segments))

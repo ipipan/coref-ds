@@ -1,10 +1,26 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
+import gzip
 import logging
 
 from lxml import etree
 
 logger = logging.getLogger(__name__)
+
+
+class FileHandler:
+    def __init__(self, path: Path):
+        self.path = path
+
+    def __enter__(self):
+        if self.path.suffix == ".gz":
+            self.file = gzip.open(self.path, 'wb')
+        else:
+            self.file = self.path.open('wb')
+        return self.file
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.file.close()
 
 
 class XMLLayer:
@@ -24,7 +40,7 @@ class XMLLayer:
     def to_file(self, file_dir: Path):
         file_dir.mkdir(parents=True, exist_ok=True)
         file_path = file_dir / self.file_path.name
-        with open(file_path, "wb") as f:
+        with FileHandler(file_path) as f:
             f.write(etree.tostring(self.root, pretty_print=True, encoding="utf-8"))
         return file_path
 

@@ -18,11 +18,15 @@ class Segment:
 
 @dataclass
 class Mention:
-    cluster_id: int
-    mention_id: int
+    id: str
+    text: str
+    segments: list
     span_start: int
     span_end: int
-    head: str | None = None
+    lemmatized_text: str | None = None
+    head_orth: str | None = None
+    head: int | None = None
+    cluster_id: int | None = None
 
 
 class Text:
@@ -57,3 +61,4 @@ class Text:
             for mention in cluster:
                 print(' '.join(mention))
             print()
+

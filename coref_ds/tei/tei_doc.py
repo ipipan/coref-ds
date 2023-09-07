@@ -19,6 +19,7 @@ import regex
 from lxml import etree
 from lxml.etree import _Comment as Comment
 import yaml
+
 from coref_ds.tei.layers.coreference import CoreferenceLayer
 from coref_ds.tei.layers.layer import XMLLayer
 from coref_ds.tei.layers.mention import MentionLayer
