@@ -7,3 +7,4 @@ def add_element(where: etree._Element, tag: str, text: str = None, attributes = 
         for k, v in attributes.items():
             el.set(str(k), str(v))
     return el
+
