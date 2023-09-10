@@ -36,7 +36,7 @@ class MentionLayer(XMLLayer):
             span_start=segments_ids.index(mnt_segments[0].id),
             span_end=segments_ids.index(mnt_segments[-1].id),
             head_orth=semh.orth,
-            head=semh,
+            head=segments_ids.index(semh_id),
             cluster_id=None,
         )
 

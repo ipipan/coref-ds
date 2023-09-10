@@ -7,13 +7,16 @@ readme = "README.md"
 packages = [{include = "coref_ds"}]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10,<3.13"
 lxml = "^4.9.2"
 udapi = {git = "https://github.com/k-sap/udapi-python"}
 python-dotenv = "^1.0.0"
 ipykernel = "^6.25.0"
 regex = "^2023.8.8"
 pyyaml = "^6.0.1"
+spacy-alignments = "^0.9.0"
+scipy = "^1.11.2"
+pytest = "^7.4.2"
 
 
 [build-system]

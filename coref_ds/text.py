@@ -61,4 +61,16 @@ class Text:
             for mention in cluster:
                 print(' '.join(mention))
             print()
+    
+    @property
+    def heads(self):
+        if not hasattr(self, 'mentions') or not hasattr(self, 'indices_to_mentions'):
+            raise AttributeError()
+        
+        heads = {}
+        for cluster in self.clusters:
+            cluster_heads = []
+            for mention_span in cluster:
+                heads[mention_span] = self.indices_to_mentions[mention_span].head
 
+        return heads

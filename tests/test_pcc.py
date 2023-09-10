@@ -9,6 +9,7 @@ from coref_ds.tei.mention import Mention
 from coref_ds.tei.layers.morphosyntax import MorphosyntaxLayer
 from coref_ds.tei.layers.segmentation import SegmentationLayer
 from coref_ds.tei.pcc import PCCStructureLayer
+from coref_ds.utils import count_mentions
 
 local_config = dotenv_values(".env")
 
@@ -24,13 +25,6 @@ layers_mapping = {
     'segmentation': (SegmentationLayer, 'ann_segmentation'),
     'senses': (None, 'ann_senses'),
 }
-
-
-def count_mentions(doc):
-    all_mentions = set()
-    for men in doc.text.mentions:
-        all_mentions.add(men.text)
-    return len(all_mentions)
 
 
 class TestPCC(unittest.TestCase):

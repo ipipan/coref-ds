@@ -109,6 +109,7 @@ class TEIDocument:
             clusters=None,
         )
         text.mentions = mentions
+        text.indices_to_mentions = {(m.span_start, m.span_end): m for m in mentions}
 
         if self.layers.get('coreference'):
             mention_clusters = self.layers['coreference'].parse_layer()

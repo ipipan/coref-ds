@@ -12,3 +12,9 @@ def get_paragraph_counts(p: Path):
     paragraph_ids = [int(line.split('s')[0].strip('p')) for line in sent_id] # extract paragraph id
 
     return Counter(paragraph_ids)
+
+def corefud_name_mapper(name: str) -> str:
+    # # newdoc id = input_data/PCC-1.5-MMAX/very_short/36e_words.xml
+    name = name.split('/')[-1]
+    name = name.split('_')[0]
+    return name
