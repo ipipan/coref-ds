@@ -21,7 +21,7 @@ class MmaxFiles:
     mmax: _Element
     mentions: _Element
     words: _Element
-    bak_mentions: _Element = None  # @TODO: what is the relation between mentions file and bak_mentions file?
+    bak_mentions: _Element = None  # These rather just a backup file
 
 
 def gen_mmax_schema(doc_id):
@@ -77,17 +77,19 @@ class MmaxDoc(CorefDoc):
         self.mentions = mentions
 
     @staticmethod
-    def load_files(p: Path):
+    def load_files(p: Path, load_bak_mentions: bool = False):
         doc_id = p.stem
+        mentions_path = p.parent / f'{doc_id}_mentions.xml'
         bak_mentions_path = p.parent / f'{doc_id}_mentions.xml.bak'
-        if bak_mentions_path.exists():
+
+        if bak_mentions_path.exists() and load_bak_mentions:
             bak_mentions = etree.parse(bak_mentions_path)
         else:
             bak_mentions = None
 
         return MmaxFiles(
             mmax=etree.parse(p),
-            mentions=etree.parse(p.parent / f'{doc_id}_mentions.xml'),
+            mentions=etree.parse(mentions_path),
             words=etree.parse(p.parent / f'{doc_id}_words.xml'),
             bak_mentions=bak_mentions,
         )

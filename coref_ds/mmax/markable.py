@@ -59,8 +59,8 @@ class Markable:
         )
 
     def get_span(self):
-        start, *end = self.span.split('..')
-        end = end[0] if end else start
+        start, *end = self.span.split('..') 
+        end = end[0] if end else start # @TODO non-continuous spans
         try:
             start, end = (int(el.split('_')[-1]) for el in (start, end))  # 'word_0' -> 0
         except ValueError as e:
