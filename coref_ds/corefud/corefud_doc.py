@@ -1,12 +1,12 @@
 from pathlib import Path
 from collections import Counter
 from abc import abstractmethod
-from coref_ds.align import align, align_heads, get_alignment
 
 
 import udapi
 from udapi.block.read.conllu import Conllu as ConlluReader
 from udapi.block.write.conllu import Conllu as ConlluWriter
+from coref_ds.corefud.utils import add_mention, prepare_alignment
 
 from coref_ds.text import Text
 
@@ -71,31 +71,20 @@ class CorefUDDoc:
             ent_ids = [1]
         udapi_words = [word for word in doc.nodes_and_empty]
         udapi_words_str = [word.form for word in udapi_words]
-        alignment, alignment_back = get_alignment(text.segments, udapi_words_str)
-        aligned_clusters, indices_mapping = align(
-            udapi_words_str, text.segments, text.clusters, alignment=alignment
-            )
-        aligned_heads = align_heads(text.heads, indices_mapping, alignment=alignment)
+        aligned_clusters, aligned_heads = prepare_alignment(text, udapi_words_str)
         for cluster in aligned_clusters:
             ent_id = len(ent_ids)
             entity = doc.create_coref_entity(eid=f'c{ent_id}')
             ent_ids.append(ent_id)
             for mention in cluster:
-                start, end = mention
-                if mention in mentions_set:
-                    continue  # skip duplication in different cluster
-                words = udapi_words[start:end]
-                men_head_ind = aligned_heads.get(mention)
-                head = udapi_words[men_head_ind] if men_head_ind else None
-                sentence_ids = set([word.address().split('#')[0] for word in words])
-                if len(sentence_ids) > 1:
-                    print('omit cross-sentence mention', mention, udapi_words_str[start:end], udapi_words[start:end])
-                    continue
-                doc_mention = entity.create_mention(
-                    head=head,
-                    words=udapi_words[start:end],
-                    )
-                mentions_set.add(mention)
+                add_mention(
+                    mention,
+                    entity,
+                    udapi_words,
+                    udapi_words_str,
+                    aligned_heads,
+                    mentions_set=mentions_set,
+                )
         udapi.core.coref.store_coref_to_misc(doc)
 
     def map_clusters(self, texts: list[Text], docname_mapper: callable = None):
@@ -107,8 +96,11 @@ class CorefUDDoc:
         ent_ids = [1]
 
         for text in texts:
-            doc = udapi_docs_map[text.text_id]
-            self.add_text_clusters_to_doc(text, doc, ent_ids=ent_ids)
+            doc = udapi_docs_map.get(text.text_id)
+            if doc:
+                self.add_text_clusters_to_doc(text, doc, ent_ids=ent_ids)
+            else:
+                print(f'No doc found for {text.text_id}')
 
     def to_file(self, p: Path):
         with open(p, 'w') as f:

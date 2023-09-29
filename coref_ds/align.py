@@ -1,14 +1,24 @@
 import spacy_alignments
 
 
-def align_mention(mention_inds, subtoken2token_indices):
+def align_mention(mention_inds, subtoken2token_indices, annotated_tokens=None):
     start, end = mention_inds
+
+    if annotated_tokens and 'Ø' in annotated_tokens[start:(end+1)]: # zero anaphora
+        no_zero_inds = []
+        for ind, token in zip(range(start,(end+1)), annotated_tokens[start:(end+1)]):
+            if token != 'Ø':
+                no_zero_inds.append(ind)
+        print(annotated_tokens[start:(end+1)])
+        if no_zero_inds:
+            start, end = no_zero_inds[0], no_zero_inds[-1]
+        print(annotated_tokens[start:(end+1)])
+
     if subtoken2token_indices[start] and subtoken2token_indices[end]:
         start, end = (
             subtoken2token_indices[start][0],
             subtoken2token_indices[end][0]
         )
-
         return start, end + 1
     else:
         return None
@@ -51,7 +61,7 @@ def align(original_tokens, annotated_tokens, mentions_inds, alignment=None):
     for cluster in mentions_inds:
         aligned_cluster = []
         for mention_inds in cluster:
-            aligned = align_mention(mention_inds, alignment)
+            aligned = align_mention(mention_inds, alignment, annotated_tokens)
             mapping[mention_inds] = aligned
             if aligned:
                 aligned_cluster.append(aligned)
