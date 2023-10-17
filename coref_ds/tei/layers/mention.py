@@ -50,6 +50,13 @@ class MentionLayer(XMLLayer):
             for mnt in mention_nodes:
                 yield mnt, mnt_id, par_id
 
+    def mention_strings(self):
+        paragraphs = self.root.xpath("//tei:p", namespaces=self.ns_map)
+        for par_id, par in enumerate(paragraphs):
+            comment_nodes = par.xpath(".//comment()", namespaces=self.ns_map)
+            for comment in comment_nodes:
+                yield comment
+
     def parse_layer(self, segments, segments_ids):
         mentions = []
         for mnt, mnt_id, par_id in self.mention_nodes():
@@ -65,8 +72,12 @@ class MentionLayer(XMLLayer):
             parent = mention.getparent()
             parent.remove(mention)
 
+        for comment in self.mention_strings():
+            parent = comment.getparent()
+            parent.remove(comment)
+
     def add_mention(self, mention: Mention, segments):
         p_el = self.root.xpath("//tei:p", namespaces=self.ns_map)[0] # assumes there is only one <p/>
-        comment = re.sub('-', ' ', mention.text)
-        p_el.append(etree.Comment(comment))
-        p_el.append(mention.to_xml(self.ns_map['xmlns'], segments))
+        comment = re.sub(r'-(?=-)', '- ', f" {mention.text} ")
+        etree.SubElement(p_el,etree.Comment(comment))
+        etree.SubElement(p_el, mention.to_xml(self.ns_map['xmlns'], segments))
