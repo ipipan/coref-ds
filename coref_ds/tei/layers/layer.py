@@ -26,19 +26,20 @@ class FileHandler:
 class XMLLayer:
     def __init__(self, file_path, namespace: dict):
         self.file_path = file_path
+        self.parser = etree.XMLParser(remove_blank_text=True)
         self.root = None
         self.ns_map = namespace
         self._load()
 
     def _load(self):
         try:
-            self.root = etree.parse(self.file_path).getroot()
+            self.root = etree.parse(self.file_path, self.parser).getroot()
         except etree.XMLSyntaxError as e:
             logger.error(f"Error while parsing {self.file_path}: {e}")
             self.root = None
 
     def to_file(self, file_dir: Path):
-        file_dir.mkdir(parents=True, exist_ok=True)
+        file_dir.mkdir(parents=True, exist_ok=True) 
         file_path = file_dir / self.file_path.name
         with FileHandler(file_path) as f:
             f.write(etree.tostring(self.root, pretty_print=True, encoding="utf-8"))
