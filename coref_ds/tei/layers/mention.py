@@ -79,5 +79,5 @@ class MentionLayer(XMLLayer):
     def add_mention(self, mention: Mention, segments):
         p_el = self.root.xpath("//tei:p", namespaces=self.ns_map)[0] # assumes there is only one <p/>
         comment = re.sub(r'-(?=-)', '- ', f" {mention.text} ")
-        etree.SubElement(p_el,etree.Comment(comment))
-        etree.SubElement(p_el, mention.to_xml(self.ns_map['xmlns'], segments))
+        p_el.append(etree.Comment(comment))
+        p_el.append(mention.to_xml(self.ns_map['xmlns'], segments))
