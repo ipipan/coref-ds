@@ -15,10 +15,11 @@ class TestCorefUD(unittest.TestCase):
     def test_empty_mentions(self):
         with tempfile.NamedTemporaryFile() as f:
             new_path = Path(f.name)
+            self.assertTrue(pcc.exists())
             doc = CorefUDDoc(pcc)
             doc.remove_coref()
             doc.to_file(new_path)
             doc2 = CorefUDDoc(new_path)
-            for doc in doc2.udapi_docs:
-                self.assertEqual(len(doc.coref_entities), 0)
+            for udapi_doc in doc2.udapi_docs + doc.udapi_docs:
+                self.assertEqual(len(udapi_doc.coref_entities), 0)
 

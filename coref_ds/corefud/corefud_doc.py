@@ -98,6 +98,7 @@ class CorefUDDoc:
         for text in texts:
             doc = udapi_docs_map.get(text.text_id)
             if doc:
+                print(f'Adding clusters for {text.text_id}')
                 self.add_text_clusters_to_doc(text, doc, ent_ids=ent_ids)
             else:
                 print(f'No doc found for {text.text_id}')
