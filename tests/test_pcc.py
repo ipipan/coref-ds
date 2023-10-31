@@ -30,13 +30,13 @@ layers_mapping = {
 class TestPCC(unittest.TestCase):
     def test_load(self):
         tei_doc = TEIDocument(
-            Path(local_config['PCC_ROOT']) / '38b',
+            Path(local_config['PCC_ROOT']) / 'train' / '38b',
         )
         clusters = tei_doc.text.clusters
         self.assertEqual(len(clusters), 77)
         all_mentions = set()
         for men in tei_doc.text.mentions:
-            print(men.head.orth, men.text)
+            print(men.head, men.text)
             all_mentions.add(men.text)
         self.assertTrue('uczestników zajęć z informatyki' in all_mentions)
         self.assertEqual(len(all_mentions), len(set([men.text for men in tei_doc.text.mentions])))
@@ -44,7 +44,7 @@ class TestPCC(unittest.TestCase):
 
     def test_override_mentions(self):
         tei_doc = TEIDocument(
-            Path(local_config['PCC_ROOT']) / '38b',
+            Path(local_config['PCC_ROOT']) / 'train' / '38b',
         )
         clusters = tei_doc.text.clusters
         print(tei_doc.text.segments_meta)
@@ -54,7 +54,7 @@ class TestPCC(unittest.TestCase):
         self.assertEqual(len(no_clusters), 0)
         self.assertEqual(count_mentions(tei_doc), 0)
         ind = 0
-        max_mentions = 2
+        max_mentions = 20
         print('test')
         for cluster in clusters:
             for start, end in cluster:
