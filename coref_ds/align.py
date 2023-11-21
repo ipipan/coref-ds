@@ -54,8 +54,7 @@ def align(original_tokens, annotated_tokens, mentions_inds, alignment=None):
 
     aligned_mention_inds = []
     mapping = {}
-
-    if not isinstance(mentions_inds[0], list):
+    if mentions_inds and not isinstance(mentions_inds[0], list):
         mentions_inds = [mentions_inds]
 
     for cluster in mentions_inds:

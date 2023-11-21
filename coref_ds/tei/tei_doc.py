@@ -103,9 +103,9 @@ class TEIDocument:
             mentions = self.layers['mentions'].parse_layer(segments_meta, segments_ids)
 
         text = Text(
-            self.doc_path.name,
-            segments,
-            list(segments_meta.values()),
+            text_id=self.doc_path.name,
+            segments=segments,
+            segments_meta=list(segments_meta.values()),
             clusters=None,
         )
         text.mentions = mentions

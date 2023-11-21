@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import copy
 
 
@@ -30,19 +30,12 @@ class Mention:
     cluster_id: int | None = None
 
 
+@dataclass
 class Text:
-    def __init__(
-        self,
-        text_id: int | str,
-        segments: list[str],
-        segments_meta: list[Segment] | None = None,
-        clusters: list[list[int]] | None = None,
-        corpus_name: str | None = None,
-    ):
-        self.text_id = text_id
-        self.segments = segments
-        self.clusters = clusters if clusters else []
-        self.segments_meta = segments_meta
+    text_id: str 
+    segments: list[str]
+    clusters: list[list[tuple[int, int]]] = field(default_factory=list)
+    segments_meta: list[Segment] = field(default_factory=list)
 
     @property
     def clusters_str(self):
