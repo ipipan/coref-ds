@@ -162,8 +162,8 @@ class MmaxDoc(CorefDoc):
             segments_meta.append(word)
 
         return Text(
-            self.doc_id,
-            [w.orth for w in self.words],
-            segments_meta,
-            list(clusters.values()),
+            text_id=self.doc_id,
+            segments=[w.orth for w in self.words],
+            segments_meta=segments_meta,
+            clusters=list(clusters.values()),
         )
