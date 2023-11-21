@@ -1,5 +1,8 @@
 import unittest
+import tempfile
+import json
 from pathlib import Path
+import dataclasses
 
 from dotenv import dotenv_values
 
@@ -33,3 +36,9 @@ class TestMmax(unittest.TestCase):
         print(
             list([men.mention_head] for men in doc.mentions)
         )
+
+    def test_serialize(self):
+        doc = MmaxDoc.from_file(Path(str(local_config['NKJP_MMAX_ROOT'])) / '0_anotowane' /'030-2-000000012.mmax')
+        text = doc.text
+        with tempfile.TemporaryFile(mode='w') as f:
+            f.write(json.dumps(dataclasses.asdict(text)))

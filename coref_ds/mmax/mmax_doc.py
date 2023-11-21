@@ -150,12 +150,12 @@ class MmaxDoc(CorefDoc):
 
     @property
     def text(self):
-        clusters = defaultdict(set)
+        clusters = defaultdict(list)
         for m in self.mentions:
             span = m.get_span()
             if span:
                 cluster_id = m.mention_group if m.mention_group != 'empty' else m.id
-                clusters[cluster_id].add(span)
+                clusters[cluster_id].append(span)
 
         segments_meta = []
         for word in self.words:
