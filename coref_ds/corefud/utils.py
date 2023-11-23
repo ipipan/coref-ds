@@ -1,9 +1,12 @@
 
 
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
+import udapi
+
 from coref_ds.align import align, align_heads, get_alignment
+from coref_ds.text import Segment
 
 def get_paragraph_counts(p: Path):
     with open(p, 'r') as f:
@@ -74,3 +77,31 @@ def add_mention(
             words=words,
             )
     mentions_set.add(mention)     
+
+
+def node_to_segment(node: udapi.core.node.Node) -> str:
+    meta = Segment(
+        orth=node.form,
+        lemma=node.lemma,
+        has_nps=node.prev_node.no_space_after if node.prev_node else False,
+        pos=node.upos,
+        id=node.address(),
+    )
+    return meta
+
+def clusters_from_doc(doc):
+    address2ind = {
+        node.address():ind for ind, node in enumerate(doc.nodes_and_empty)
+    }
+    clusters = defaultdict(list)
+    for ent in doc.coref_entities:
+        eid = ent.eid
+        for men in ent.mentions:
+            words = list(men.words)
+            start_ind = address2ind[words[0].address()]
+            end_ind = address2ind[words[-1].address()]
+            clusters[ent.eid].append(
+                (start_ind, end_ind)
+            )
+
+    return tuple(clusters.values())

@@ -6,7 +6,7 @@ from abc import abstractmethod
 import udapi
 from udapi.block.read.conllu import Conllu as ConlluReader
 from udapi.block.write.conllu import Conllu as ConlluWriter
-from coref_ds.corefud.utils import add_mention, prepare_alignment
+from coref_ds.corefud.utils import add_mention, clusters_from_doc, node_to_segment, prepare_alignment
 
 from coref_ds.text import Text
 
@@ -62,7 +62,17 @@ class CorefUDDoc:
             
     @property
     def text(self) -> Text:
-        pass
+        if len(self.udapi_docs) == 1:
+            doc = self.udapi_docs[0]
+            text = Text(
+                text_id=doc.meta['docname'],
+                segments=[n.form for n in doc.nodes_and_empty],
+                segments_meta=[node_to_segment(n) for n in doc.nodes_and_empty],
+                clusters=clusters_from_doc(doc),
+            )
+            return text
+        else:
+            raise ValueError('More than one document in CorefUDDoc')
 
     def add_text_clusters_to_doc(self, text, doc, mentions_set=None, ent_ids=None):
         if mentions_set is None:

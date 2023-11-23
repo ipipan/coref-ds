@@ -23,3 +23,11 @@ class TestCorefUD(unittest.TestCase):
             for udapi_doc in doc2.udapi_docs + doc.udapi_docs:
                 self.assertEqual(len(udapi_doc.coref_entities), 0)
 
+
+    def test_to_text(self):
+        self.assertTrue(pcc.exists())
+        doc = CorefUDDoc(pcc)
+        doc1 = doc.udapi_docs[0]
+        doc.udapi_docs = [doc1]
+        print(doc.text.print_clusters())
+
