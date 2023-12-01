@@ -9,7 +9,9 @@ from coref_ds.corefud.corefud_doc import CorefUDDoc
 local_config = dotenv_values(".env")
 
 corefud = Path(local_config["COREFUD_ROOT"])
+pcc_single_texts = Path(local_config["PCC_COREFUD_SINGLE_TEXTS"])
 pcc = corefud / 'CorefUD_Polish-PCC' / 'pl_pcc-corefud-dev0.conllu'
+pcc_train = corefud / 'CorefUD_Polish-PCC' / 'pl_pcc-corefud-train.conllu'
 
 class TestCorefUD(unittest.TestCase):
     def test_empty_mentions(self):
@@ -31,4 +33,20 @@ class TestCorefUD(unittest.TestCase):
         doc.udapi_docs = [doc1]
         text = doc.text
         print(doc.text.print_clusters())
+
+    def test_all_texts(self):
+        paths = list(pcc_single_texts.glob('*/*.conllu'))
+        error_paths = []
+        # doc = CorefUDDoc(pcc_train)
+        # text = doc.text
+        for path in paths:
+            try:
+                doc = CorefUDDoc(path)
+                text = doc.text
+            except Exception as e:
+                error_paths.append(path)
+                raise e
+
+        self.assertEqual(len(paths), 1828)
+        print(len(error_paths))
 

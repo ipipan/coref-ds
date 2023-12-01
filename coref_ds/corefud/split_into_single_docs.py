@@ -19,7 +19,6 @@ def get_corefud_texts(paths: list[Path]) -> dict:
     for path in paths:
         with open(path) as f:
             file_str = f.read()
-
         path_texts = file_str.split(TEXT_HEADER)
         path_ids = [get_text_id(p) for p in path_texts]
         texts.update(
@@ -43,8 +42,10 @@ if __name__ == '__main__':
         pcc / 'pl_pcc-corefud-test.conllu'
         ])
         )
+    header = "# newdoc id = "
     for split_name, split in zip(['train', 'dev', 'test'], corefud_texts):
+
         (new_split_dir / split_name).mkdir(exist_ok=True)
-        for t_id, text in enumerate(split):
+        for t_id, text in split.items():
             with open(new_split_dir / split_name /  f"{t_id}.conllu", 'w') as f:
-                f.write(text)
+                f.write(header + text)

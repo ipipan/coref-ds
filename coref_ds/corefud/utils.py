@@ -2,6 +2,7 @@
 
 from collections import Counter, defaultdict
 from pathlib import Path
+import logging
 
 import udapi
 
@@ -83,6 +84,10 @@ def node_to_segment(node: udapi.core.node.Node) -> str:
     try:
         prev_node = node.prev_node
     except IndexError:
+        prev_node = None
+        has_nps = False
+    except TypeError as e:
+        logging.warn(f"Error in node {node.form} {node.address()}")
         prev_node = None
         has_nps = False
     else:

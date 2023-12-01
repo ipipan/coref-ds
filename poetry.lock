@@ -1170,7 +1170,7 @@ test = ["pytest"]
 type = "git"
 url = "https://github.com/k-sap/udapi-python"
 reference = "HEAD"
-resolved_reference = "c23c1f746c35852ba13dbd6849077d48ccc16345"
+resolved_reference = "1d697d86bf2c4e34b29219717701078d9d089b95"
 
 [[package]]
 name = "wcwidth"
