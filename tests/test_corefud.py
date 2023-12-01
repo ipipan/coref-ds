@@ -29,5 +29,6 @@ class TestCorefUD(unittest.TestCase):
         doc = CorefUDDoc(pcc)
         doc1 = doc.udapi_docs[0]
         doc.udapi_docs = [doc1]
+        text = doc.text
         print(doc.text.print_clusters())
 

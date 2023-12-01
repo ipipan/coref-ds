@@ -69,7 +69,7 @@ class CorefUDDoc:
         if len(self.udapi_docs) == 1:
             doc = self.udapi_docs[0]
             text = Text(
-                text_id=doc.meta['docname'],
+                text_id=doc.meta.get('docname', self.doc_path.name),
                 segments=[n.form for n in doc.nodes_and_empty],
                 segments_meta=[node_to_segment(n) for n in doc.nodes_and_empty],
                 clusters=clusters_from_doc(doc),
