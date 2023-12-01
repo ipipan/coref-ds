@@ -21,6 +21,10 @@ class CorefUDDoc:
         self.first_paragraph_ind = 0
         self.parse_doc()
 
+    @classmethod
+    def from_file(cls, p: Path):
+        return cls(p)
+
     def parse_doc(self):
         with open(self.doc_path) as f:
             udapi_docs = ConlluReader(filehandle=f, split_docs=True).read_documents()
