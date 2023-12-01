@@ -80,10 +80,18 @@ def add_mention(
 
 
 def node_to_segment(node: udapi.core.node.Node) -> str:
+    try:
+        prev_node = node.prev_node
+    except IndexError:
+        prev_node = None
+        has_nps = False
+    else:
+        has_nps = prev_node.no_space_after if prev_node else False
+
     meta = Segment(
         orth=node.form,
         lemma=node.lemma,
-        has_nps=node.prev_node.no_space_after if node.prev_node else False,
+        has_nps=has_nps,
         pos=node.upos,
         id=node.address(),
     )
