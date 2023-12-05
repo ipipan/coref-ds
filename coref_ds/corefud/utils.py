@@ -87,7 +87,7 @@ def node_to_segment(node: udapi.core.node.Node) -> str:
         prev_node = None
         has_nps = False
     except TypeError as e:
-        logging.warn(f"Error in node {node.form} {node.address()}")
+        logging.warning(f"Error in node {node.form} {node.address()}")
         prev_node = None
         has_nps = False
     else:
