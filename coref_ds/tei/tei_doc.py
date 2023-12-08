@@ -70,6 +70,10 @@ class TEIDocument:
         self.layers = self.load_layers()
         self.splitter = LayersSplitter(self)
 
+    @classmethod
+    def from_file(cls, p: Path):
+        return cls(p)
+
     def load_layers(self):
         layers = {}
         for layer_name, (layer_class, layer_path) in self.layers_mapping.items():
