@@ -85,7 +85,10 @@ class TEIDocument:
         return layers
 
     def parse_tei_text(self, add_single_mentions_to_cluster=False):
-        morph_dict = self.layers['morphosyntax'].parse_layer()
+        try:
+            morph_dict = self.layers['morphosyntax'].parse_layer()
+        except KeyError:
+            raise ValueError(f'Morphosyntax layer is not present in the document {self.doc_path.name}')
         segments_ids, segments_dict = morph_dict['segments_ids'], morph_dict['segments_dict']
         segments = [segment['orth'] for k, segment in segments_dict.items()]
         segments_dicts = [segment for k, segment in segments_dict.items()]
