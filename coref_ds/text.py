@@ -29,6 +29,10 @@ class Mention:
     head: int | None = None
     cluster_id: int | None = None
 
+    def __iter__(self):
+        for el in [self.span_start, self.span_end]:
+            yield el
+
 
 @dataclass
 class Text:
