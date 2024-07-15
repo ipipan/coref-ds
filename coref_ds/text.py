@@ -113,3 +113,9 @@ class Text:
                 new_clusters.append(new_spans)
         text.clusters = new_clusters
         return text
+    
+
+    def __repr__(self):
+        return ''.join(
+            [f'\n\n --- Cluster {ind} --- \n' + ' | '.join(cluster) for ind, cluster in enumerate(self.clusters_str)]
+        ).strip()
