@@ -45,7 +45,7 @@ class Text:
             for span in cluster:
                 start, *end = span
                 end = end[0] if end else start
-                cluster_str.append(tuple(self.segments[start : end + 1]))
+                cluster_str.append(self.segments[start : end + 1])
             clusters_str.append(tuple(cluster_str))
 
         return tuple(clusters_str)
@@ -116,6 +116,7 @@ class Text:
     
 
     def __repr__(self):
+        repr = []
         return ''.join(
             [f'\n\n --- Cluster {ind} --- \n' + ' | '.join(cluster) for ind, cluster in enumerate(self.clusters_str)]
         ).strip()
