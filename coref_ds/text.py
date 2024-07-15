@@ -117,6 +117,12 @@ class Text:
 
     def __repr__(self):
         repr = []
-        return ''.join(
-            [f'\n\n --- Cluster {ind} --- \n' + ' | '.join(cluster) for ind, cluster in enumerate(self.clusters_str)]
-        ).strip()
+
+        for ind, cluster in enumerate(self.clusters_str):
+            repr.append(f'\n\n --- Cluster {ind} --- \n')
+
+            for mention in cluster:
+                repr.append(' '.join(mention))
+                repr.append(' | ')
+
+        return ''.join(repr)
