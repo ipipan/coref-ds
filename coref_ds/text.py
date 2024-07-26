@@ -1,5 +1,8 @@
 from dataclasses import dataclass, field
 import copy
+import re
+
+from coref_ds.utils import find_incremental_subsequences
 
 
 @dataclass
@@ -7,6 +10,7 @@ class Segment:
     orth: str
     lemma: str
     has_nps: bool
+    index: int
     last_in_sent: bool | None = None
     last_in_par: bool | None = None
     pos: str | None = None
@@ -15,6 +19,17 @@ class Segment:
     person: str | None = None
     id: str | None = None
     is_semantic_head: bool | None = None
+
+    def get_token_index(self):
+        """
+        return segment (token) position in text
+        """
+        if self.index:
+            return self.index
+        else:
+             # this should probably be moved to TEI subclass, because it's not gonna work elsewhere
+            match = re.search(r'(\d+)(?=[^\d]*$)', self.id)
+            return int(match.group(0)) if match else None
 
 
 @dataclass
@@ -28,10 +43,46 @@ class Mention:
     head_orth: str | None = None
     head: int | None = None
     cluster_id: int | None = None
+    is_continuous: bool = True
+    mention_segment_to_text_index: list | None = None
 
-    def __iter__(self):
-        for el in [self.span_start, self.span_end]:
-            yield el
+    def __post_init__(self):
+        incremental_subsequences = find_incremental_subsequences(self.segments)
+        assert len(incremental_subsequences) > 0
+        if len(incremental_subsequences) == 1:
+            self.is_continuous = True
+        else:
+            self.is_continuous = False
+            self.submentions = incremental_subsequences
+            self.maximal_continuous_mention = self.get_max_cont_mention()
+
+    def get_max_cont_mention(self):
+        # head outside of mention? It could happen for dependency tree determined heads.
+        # maybe this should be in a more appropriate data structure
+        if self.submentions:
+            try:
+                return list(filter(
+                            lambda x: self.segments[self.head] in x, self.submentions
+                            ))[0]
+            except IndexError:
+                return sorted(self.submentions, key=len)
+
+        return []
+
+    def __iter__(self, include_noncontinuous=False):
+        yield self.get_mention_span(include_noncontinuous)
+
+    def get_mention_span(self, include_noncontinuous=False):
+        if self.is_continuous:
+            return self.span_start, self.span_end
+        elif include_noncontinuous:
+            return [
+                (submention[0].get_token_index(), submention[-1].get_token_index()) for submention in self.submentions
+                ]
+        else:
+            main_submen = self.maximal_continuous_mention
+            return main_submen[0].get_token_index(), main_submen[-1].get_token_index()
+
 
 
 @dataclass

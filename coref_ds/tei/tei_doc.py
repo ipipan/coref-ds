@@ -95,6 +95,7 @@ class TEIDocument:
         segments_meta = {
             segment['id']: Segment(
                 id=segment['id'],
+                index=segments_ids.index(segment['id']),
                 orth=segment['orth'],
                 lemma=segment['base'],
                 has_nps=segment['has_nps'],
