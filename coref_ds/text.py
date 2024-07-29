@@ -76,7 +76,8 @@ class Mention:
                 logging.exception(f"""
                                  number of submentions: {len(self.submentions)} 
                                  mention_head: {self.head} {self.head_orth} 
-                                 segments: {[s.orth for s in self.segments]}
+                                 segments: {[s.orth for s in self.segments]} 
+                                 submentions: {self.submentions} 
                                  """)
                 print("IndexError")
                 return sorted(self.submentions, key=len)[-1]

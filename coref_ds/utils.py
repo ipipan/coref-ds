@@ -24,7 +24,7 @@ def find_incremental_subsequences(sequence):
         if not current_subsequence or sequence[i].get_token_index() == current_subsequence[-1].get_token_index() + 1:
             current_subsequence.append(sequence[i])
         else:
-            if len(current_subsequence) > 1:
+            if len(current_subsequence) >= 1:
                 subsequences.append(current_subsequence)
             current_subsequence = [sequence[i]]
     
@@ -37,7 +37,7 @@ def find_incremental_subsequences(sequence):
 
 def any_segment_is_head(segments, head_orth: str, head_index: int):
     for seg in segments:
-        if seg.is_orth_equal(head_orth) and seg.get_token_index() == head_index:
+        if seg.is_orth_equal(head_orth):
             return True
         
     return False

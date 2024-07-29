@@ -109,3 +109,16 @@ class TestTextAPI(unittest.TestCase):
             mentions = sorted(mentions)
             self.assertIn((47,60), mentions)
             self.assertIn((36, 40), mentions)
+
+    def test_noncontinuous_mentions_heads(self):
+            tei_doc = TEIDocument(
+                Path(local_config['PCC_ROOT']) / 'train' / '3342',
+            )
+            text = tei_doc.text
+
+            banana = list(filter(
+                lambda x: not x.is_continuous, sorted(text.mentions, key=lambda x: x.span_start)
+                ))[1]
+            banana_tokens = [seg.orth for seg in banana.segments]
+            print(banana)
+            self.assertIn('banany', banana_tokens)
