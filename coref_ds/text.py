@@ -25,12 +25,8 @@ class Segment:
         """
         return segment (token) position in text
         """
-        if self.index:
-            return self.index
-        else:
-             # this should probably be moved to TEI subclass, because it's not gonna work elsewhere
-            match = re.search(r'(\d+)(?=[^\d]*$)', self.id)
-            return int(match.group(0)) if match else None
+        return self.index
+
 
     def is_orth_equal(self, orth):
         return self.orth == orth

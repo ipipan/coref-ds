@@ -47,6 +47,10 @@ class TestTextAPI(unittest.TestCase):
             print(mention.text, mention.is_continuous)
 
         non_continuous_mentions = list(filter(lambda el: not el.is_continuous, text.mentions))
+        print([m.text for m in non_continuous_mentions])
+        for ind, subm in enumerate(non_continuous_mentions[0].submentions):
+            print(ind, [(seg.orth, seg.get_token_index()) for seg in subm])
+        print()
         self.assertEqual(len(non_continuous_mentions), 2)
 
 
