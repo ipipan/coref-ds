@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
 import copy
 import re
+import logging
 
-from coref_ds.utils import find_incremental_subsequences
+from coref_ds.utils import any_segment_is_head, find_incremental_subsequences
 
 
 @dataclass
@@ -31,6 +32,9 @@ class Segment:
             match = re.search(r'(\d+)(?=[^\d]*$)', self.id)
             return int(match.group(0)) if match else None
 
+    def is_orth_equal(self, orth):
+        return self.orth == orth
+
 
 @dataclass
 class Mention:
@@ -41,7 +45,7 @@ class Mention:
     span_end: int
     lemmatized_text: str | None = None
     head_orth: str | None = None
-    head: int | None = None
+    head: int | None = None # index of the head token in text
     cluster_id: int | None = None
     is_continuous: bool = True
     mention_segment_to_text_index: list | None = None
@@ -55,17 +59,27 @@ class Mention:
             self.is_continuous = False
             self.submentions = incremental_subsequences
             self.maximal_continuous_mention = self.get_max_cont_mention()
+            self.span_start, self.span_end = self.maximal_continuous_mention[0].get_token_index(), \
+            self.maximal_continuous_mention[-1].get_token_index()
 
     def get_max_cont_mention(self):
-        # head outside of mention? It could happen for dependency tree determined heads.
-        # maybe this should be in a more appropriate data structure
+        # maximal continous mention
         if self.submentions:
             try:
-                return list(filter(
-                            lambda x: self.segments[self.head] in x, self.submentions
+                max_continuous_submention =  list(filter(
+                            lambda x: any_segment_is_head(x, self.head_orth, self.head), self.submentions
                             ))[0]
+                return max_continuous_submention
             except IndexError:
-                return sorted(self.submentions, key=len)
+                # head outside of mention? It could happen for dependency tree determined heads.
+                # maybe this should be in a more appropriate data structure
+                logging.exception(f"""
+                                 number of submentions: {len(self.submentions)} 
+                                 mention_head: {self.head} {self.head_orth} 
+                                 segments: {[s.orth for s in self.segments]}
+                                 """)
+                print("IndexError")
+                return sorted(self.submentions, key=len)[-1]
 
         return []
 
@@ -73,15 +87,12 @@ class Mention:
         yield self.get_mention_span(include_noncontinuous)
 
     def get_mention_span(self, include_noncontinuous=False):
-        if self.is_continuous:
+        if self.is_continuous or not include_noncontinuous:
             return self.span_start, self.span_end
         elif include_noncontinuous:
             return [
                 (submention[0].get_token_index(), submention[-1].get_token_index()) for submention in self.submentions
                 ]
-        else:
-            main_submen = self.maximal_continuous_mention
-            return main_submen[0].get_token_index(), main_submen[-1].get_token_index()
 
 
 

@@ -33,3 +33,12 @@ def find_incremental_subsequences(sequence):
         subsequences.append(current_subsequence)
 
     return subsequences
+
+
+def any_segment_is_head(segments, head_orth: str, head_index: int):
+    for seg in segments:
+        if seg.is_orth_equal(head_orth) and seg.get_token_index() == head_index:
+            return True
+        
+    return False
+

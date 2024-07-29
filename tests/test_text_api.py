@@ -67,3 +67,45 @@ class TestTextAPI(unittest.TestCase):
         print()
         print(stats)
 
+    def test_noncontinuous_mentions_indices(self):
+        tei_doc = TEIDocument(
+            Path(local_config['PCC_ROOT']) / 'train' / '3496',
+        )
+        text = tei_doc.text
+        print()
+        for mention in text.mentions:
+            print(mention.text, mention.is_continuous)
+
+        non_continuous_mentions = list(filter(lambda el: not el.is_continuous, text.mentions))
+
+        # get mention indices (maximal coherent, continuous mention)
+        for mention in text.mentions:
+            span = mention.get_mention_span()
+            if not mention.is_continuous:
+                print(f"{[text.segments[ind] for ind in range(*span)]}")
+
+        # get mention indices (full mention)
+        non_continuous_mentions = 0
+        for mention in text.mentions:
+            span = mention.get_mention_span(include_noncontinuous=True)
+            if isinstance(span, list) and len(span) > 1:
+                non_continuous_mentions += 1
+                print(f"\npruned: {mention.get_mention_span()} | {[s.orth for s in mention.segments]}")
+        self.assertEqual(non_continuous_mentions, 2)
+
+
+    def test_noncontinuous_mentions_clusters(self):
+            tei_doc = TEIDocument(
+                Path(local_config['PCC_ROOT']) / 'train' / '3496',
+            )
+            text = tei_doc.text
+
+            # get all clusters
+            mentions = []
+            for cluster in text.clusters:
+                for mention in cluster:
+                    mentions.append(mention)
+
+            mentions = sorted(mentions)
+            self.assertIn((47,60), mentions)
+            self.assertIn((36, 40), mentions)

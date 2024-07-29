@@ -60,13 +60,14 @@ class TestPCC(unittest.TestCase):
             for start, end in cluster:
                 if ind == max_mentions:
                     break
-                segments = tei_doc.text.segments[start:(end+1)]
-                print(segments)
+                segments_meta = tei_doc.text.segments_meta[start:(end+1)]
+                tokens = tei_doc.text.segments[start:(end+1)]
+                print(tokens)
                 tei_doc.layers['mentions'].add_mention(
                     Mention(
                         id=f"mention_{ind}",
-                        text=' '.join(segments),
-                        segments=segments,
+                        text=' '.join(tokens),
+                        segments=segments_meta,
                         span_start=start,
                         span_end=end,
                         lemmatized_text=None,
