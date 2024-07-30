@@ -27,7 +27,6 @@ class Segment:
         """
         return self.index
 
-
     def is_orth_equal(self, orth):
         return self.orth == orth
 
@@ -41,7 +40,7 @@ class Mention:
     span_end: int
     lemmatized_text: str | None = None
     head_orth: str | None = None
-    head: int | None = None # index of the head token in text
+    head: int | None = None  # index of the head token in text
     cluster_id: int | None = None
     is_continuous: bool = True
     mention_segment_to_text_index: list | None = None
@@ -56,24 +55,25 @@ class Mention:
             self.submentions = incremental_subsequences
             self.maximal_continuous_mention = self.get_max_cont_mention()
             self.span_start, self.span_end = self.maximal_continuous_mention[0].get_token_index(), \
-            self.maximal_continuous_mention[-1].get_token_index()
+                self.maximal_continuous_mention[-1].get_token_index()
 
     def get_max_cont_mention(self):
         # maximal continous mention
         if self.submentions:
             try:
-                max_continuous_submention =  list(filter(
-                            lambda x: any_segment_is_head(x, self.head_orth, self.head), self.submentions
-                            ))[0]
+                max_continuous_submention = list(filter(
+                    lambda x: any_segment_is_head(
+                        x, self.head_orth, self.head), self.submentions
+                ))[0]
                 return max_continuous_submention
             except IndexError:
                 # head outside of mention? It could happen for dependency tree determined heads.
                 # maybe this should be in a more appropriate data structure
                 logging.exception(f"""
-                                 number of submentions: {len(self.submentions)} 
-                                 mention_head: {self.head} {self.head_orth} 
-                                 segments: {[s.orth for s in self.segments]} 
-                                 submentions: {self.submentions} 
+                                 number of submentions: {len(self.submentions)}
+                                 mention_head: {self.head} {self.head_orth}
+                                 segments: {[s.orth for s in self.segments]}
+                                 submentions: {self.submentions}
                                  """)
                 print("IndexError")
                 return sorted(self.submentions, key=len)[-1]
@@ -89,13 +89,12 @@ class Mention:
         elif include_noncontinuous:
             return [
                 (submention[0].get_token_index(), submention[-1].get_token_index()) for submention in self.submentions
-                ]
-
+            ]
 
 
 @dataclass
 class Text:
-    text_id: str 
+    text_id: str
     segments: list[str]
     clusters: list[list[tuple[int, int]]] = field(default_factory=list)
     segments_meta: list[Segment] = field(default_factory=list)
@@ -108,7 +107,7 @@ class Text:
             for span in cluster:
                 start, *end = span
                 end = end[0] if end else start
-                cluster_str.append(self.segments[start : end + 1])
+                cluster_str.append(self.segments[start: end + 1])
             clusters_str.append(tuple(cluster_str))
 
         return tuple(clusters_str)
@@ -118,12 +117,12 @@ class Text:
             for mention in cluster:
                 print(' '.join(mention))
             print()
-    
+
     @property
     def heads(self):
         if not hasattr(self, 'mentions') or not hasattr(self, 'indices_to_mentions'):
             raise AttributeError()
-        
+
         heads = {}
         for cluster in self.clusters:
             cluster_heads = []
@@ -149,8 +148,10 @@ class Text:
             if getattr(text.segments_meta[ind], split_key, None):
                 curr_subtext.segments = curr_segments
                 curr_subtext.segments_meta = curr_segments_meta
-                curr_subtext.text_id += f"_{name_dict[split_key]}_{len(subtexts)}"
-                Text.trim_indexes_after_split(curr_subtext, curr_start_ind, ind)
+                curr_subtext.text_id += f"_{
+                    name_dict[split_key]}_{len(subtexts)}"
+                Text.trim_indexes_after_split(
+                    curr_subtext, curr_start_ind, ind)
                 subtexts.append(curr_subtext)
                 curr_subtext = copy.deepcopy(text)
                 curr_segments = []
@@ -176,7 +177,6 @@ class Text:
                 new_clusters.append(new_spans)
         text.clusters = new_clusters
         return text
-    
 
     def __repr__(self):
         repr = []
@@ -189,3 +189,40 @@ class Text:
                 repr.append(' | ')
 
         return ''.join(repr)
+
+    def find_agglutinants(self):
+        c_tags = ['interp', 'ign']
+        agglutinative_phrases = set()
+        for ind, seg in enumerate(self.segments_meta[:-1]):
+            next_token_global_ind_diff = 1
+            next_token_ind = ind + next_token_global_ind_diff
+            if (
+                seg.pos not in c_tags and
+                self.segments_meta[next_token_ind].pos not in c_tags and
+                self.segments_meta[next_token_ind].has_nps is True
+            ):
+                agglutinative_phrases.add(next_token_ind)
+
+        return agglutinative_phrases
+
+    def merge_agglutinative_mentions(self, verbose=False):
+        agg_indices = self.find_agglutinants()
+        merged_mentions = []
+        for mention in self.mentions:
+            first_segment = mention.segments[0]
+            if first_segment.index in agg_indices:
+                to_print = [mention.text]
+                new_start_ind = first_segment.index - 1
+                seg_to_add = self.segments_meta[new_start_ind]
+                mention.segments.insert(0, seg_to_add)
+                mention.span_start = new_start_ind
+                mention.text = seg_to_add.orth + ' ' + mention.text
+                mention.lemmatized_text = seg_to_add.lemma + ' ' + mention.lemmatized_text
+                mention.__post_init__()
+                merged_mentions.append(mention)
+                to_print.append(mention.text.replace(" ", ""))
+                if verbose:
+                    print(self.text_id, ' '.join(to_print))
+
+        return merged_mentions
+

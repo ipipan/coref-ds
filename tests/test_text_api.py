@@ -126,3 +126,25 @@ class TestTextAPI(unittest.TestCase):
             banana_tokens = [seg.orth for seg in banana.segments]
             print(banana)
             self.assertIn('banany', banana_tokens)
+
+    def test_aglutinants(self):
+            tei_doc = TEIDocument(
+                Path(local_config['PCC_ROOT']) / 'train' / '478',
+            )
+            text = tei_doc.text
+            text.find_agglutinants()
+            merged_mentions = text.merge_agglutinative_mentions()
+            self.assertEqual(len(merged_mentions), 0)
+
+    def test_aglutinants_whole_dataset(self):
+            for p in (Path(local_config['PCC_ROOT']) / 'train').iterdir():
+                 if not p.is_dir():
+                      continue
+                 else:
+                    tei_doc = TEIDocument(
+                        p,
+                    )
+                    text = tei_doc.text
+                    text.find_agglutinants()
+                    merged_mentions = text.merge_agglutinative_mentions()
+                    self.assertEqual(len(merged_mentions), 0)

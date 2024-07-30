@@ -117,6 +117,8 @@ class TEIDocument:
             clusters=None,
         )
         text.mentions = mentions
+        text.merge_agglutinative_mentions() # [płakał, am]
+        text.merge_agglutinative_mentions() # [płakała, by, m]
         text.indices_to_mentions = {(m.span_start, m.span_end): m for m in mentions}
 
         if self.layers.get('coreference'):
