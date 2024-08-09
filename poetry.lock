@@ -122,6 +122,20 @@ traitlets = ">=4"
 test = ["pytest"]
 
 [[package]]
+name = "conllu"
+version = "5.0.1"
+description = "CoNLL-U Parser parses a CoNLL-U formatted string into a nested python dictionary"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "conllu-5.0.1-py3-none-any.whl", hash = "sha256:19f46a8b61433e6ad7f06ffcafe72a18405821f8fda710f8579b95371a3cb3f9"},
+    {file = "conllu-5.0.1.tar.gz", hash = "sha256:1ce417575853c58910068ab05323ccf98135255db2afa0ff154ff29628484b6b"},
+]
+
+[package.extras]
+test = ["tox"]
+
+[[package]]
 name = "debugpy"
 version = "1.8.2"
 description = "An implementation of the Debug Adapter Protocol for Python"
@@ -1238,4 +1252,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.13"
-content-hash = "72a8847d1c3b689624385f39786ccebc6261e40eb7d41e8564d8bd919ed18ba4"
+content-hash = "5a1e24c4c984485c90baa1a9dfca2045e527447104ab994c18e3bf113348c0a3"
