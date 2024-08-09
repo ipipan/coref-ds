@@ -56,6 +56,9 @@ class Mention:
             self.maximal_continuous_mention = self.get_max_cont_mention()
             self.span_start, self.span_end = self.maximal_continuous_mention[0].get_token_index(), \
                 self.maximal_continuous_mention[-1].get_token_index()
+            
+            self.full_segments = self.segments
+            self.segments = self.maximal_continuous_mention # that's too tricky
 
     def get_max_cont_mention(self):
         # maximal continous mention
@@ -225,4 +228,3 @@ class Text:
                     print(self.text_id, ' '.join(to_print))
 
         return merged_mentions
-
