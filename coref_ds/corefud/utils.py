@@ -8,6 +8,7 @@ import udapi
 
 from coref_ds.align import align, align_heads, get_alignment
 from coref_ds.text import Segment
+from coref_ds.text import Mention
 
 def get_paragraph_counts(p: Path):
     with open(p, 'r') as f:
@@ -108,15 +109,31 @@ def clusters_from_doc(doc):
     address2ind = {
         node.address():ind for ind, node in enumerate(doc.nodes_and_empty)
     }
+    mentions = []
     clusters = defaultdict(list)
     for ent in doc.coref_entities:
         eid = ent.eid
-        for men in ent.mentions:
+        for men_ind, men in enumerate(ent.mentions):
             words = list(men.words)
             start_ind = address2ind[words[0].address()]
             end_ind = address2ind[words[-1].address()]
             clusters[ent.eid].append(
                 (start_ind, end_ind)
             )
+            mentions.append(
+                Mention(
+                    id=f"{eid}_{men_ind}",
+                    text=' '.join([w.form for w in words]),
+                    lemmatized_text=' '.join([w.lemma for w in words]),
+                    segments=[node_to_segment(n, address2ind[men.head.address()]) for n in words],
+                    span_start=start_ind,
+                    span_end=end_ind,
+                    head=address2ind[men.head.address()],
+                    head_orth=men.head.form,
+                )
+            )
 
-    return tuple(clusters.values())
+    return {
+        'clusters': tuple(clusters.values()),
+        'mentions': mentions
+    }

@@ -103,6 +103,7 @@ class Text:
     segments: list[str]
     clusters: list[list[tuple[int, int]]] = field(default_factory=list)
     segments_meta: list[Segment] = field(default_factory=list)
+    mentions: list[Mention] | None = None
 
     @property
     def clusters_str(self):
