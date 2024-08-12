@@ -18,8 +18,10 @@ class Segment:
     number: str | None = None
     gender: str | None = None
     person: str | None = None
+    deprel: str | None = None
     id: str | None = None
     is_semantic_head: bool | None = None
+
 
     def get_token_index(self):
         """

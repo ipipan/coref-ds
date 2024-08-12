@@ -10,8 +10,8 @@ local_config = dotenv_values(".env")
 
 corefud = Path(local_config["COREFUD_ROOT"])
 pcc_single_texts = Path(local_config["PCC_COREFUD_SINGLE_TEXTS"])
-pcc = corefud / 'CorefUD_Polish-PCC' / 'pl_pcc-corefud-dev0.conllu'
-pcc_train = corefud / 'CorefUD_Polish-PCC' / 'pl_pcc-corefud-train.conllu'
+pcc = corefud / 'pl_pcc-corefud-test.conllu'
+pcc_train = corefud / 'pl_pcc-corefud-train.conllu'
 
 class TestCorefUD(unittest.TestCase):
     def test_empty_mentions(self):
@@ -33,6 +33,29 @@ class TestCorefUD(unittest.TestCase):
         doc.udapi_docs = [doc1]
         text = doc.text
         print(doc.text.print_clusters())
+
+
+    def test_deprels(self):
+        self.assertTrue(pcc.exists())
+        doc = CorefUDDoc(pcc)
+        doc1 = doc.udapi_docs[0]
+        doc.udapi_docs = [doc1]
+        text = doc.text
+        print(text.print_clusters())
+        print(
+            [(s.deprel, s.index) for s in text.segments_meta]
+        )
+        for cluster in text.clusters:
+            for start, end in cluster:
+                self.assertEqual(
+                    start, text.segments_meta[start].get_token_index()
+                )
+                self.assertEqual(text.segments_meta[end].get_token_index(), end)
+                print({
+                    'segments indices': [text.segments_meta[start].get_token_index(), text.segments_meta[end].get_token_index()],
+                    'cluster indices': [start, end],
+                    'text': ' '.join(text.segments[start:(end+1)])
+                })
 
     def test_all_texts(self):
         paths = list(pcc_single_texts.glob('*/*.conllu'))

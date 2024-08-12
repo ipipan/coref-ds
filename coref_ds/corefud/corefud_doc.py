@@ -68,10 +68,15 @@ class CorefUDDoc:
     def text(self) -> Text:
         if len(self.udapi_docs) == 1:
             doc = self.udapi_docs[0]
+            segments_meta = []
+            for ind, node in enumerate(doc.nodes_and_empty):
+                segments_meta.append(
+                    node_to_segment(node, ind)
+                )
             text = Text(
                 text_id=doc.meta.get('docname', self.doc_path.name),
                 segments=[n.form for n in doc.nodes_and_empty],
-                segments_meta=[node_to_segment(n) for n in doc.nodes_and_empty],
+                segments_meta=segments_meta,
                 clusters=clusters_from_doc(doc),
             )
             return text

@@ -80,7 +80,7 @@ def add_mention(
     mentions_set.add(mention)     
 
 
-def node_to_segment(node: udapi.core.node.Node) -> str:
+def node_to_segment(node: udapi.core.node.Node, node_position_in_text: int = None) -> str:
     try:
         prev_node = node.prev_node
     except IndexError:
@@ -99,6 +99,8 @@ def node_to_segment(node: udapi.core.node.Node) -> str:
         has_nps=has_nps,
         pos=node.upos,
         id=node.address(),
+        deprel=node.deprel,
+        index=node_position_in_text,
     )
     return meta
 
