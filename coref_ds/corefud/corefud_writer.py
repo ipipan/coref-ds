@@ -48,7 +48,7 @@ def get_indices_to_mention_mapping(text: Text):
     index_to_mention_end = defaultdict(list)
     span_to_mention = {}
     mention_id = 0
-
+    
     for m in text.mentions:
         span_to_mention[(m.span_start, m.span_end)] = m
 
@@ -94,11 +94,6 @@ def gen_corefud_for_token(seg: Segment, text: Text, sentence: list[Segment]):
     mentions_starting_at_seg.sort(key=lambda m: m.span_end)
     mentions_ending_at_seg.sort(key=lambda m: m.span_start)
 
-    print({
-        'start': [(m.id, m.text) for m in mentions_starting_at_seg],
-        'end': [(m.id, m.text) for m in mentions_ending_at_seg],
-        'singleton': [(m.id, m.text) for m in singletons_at_seg]
-    })
     for m in mentions_ending_at_seg:
         entities.append(
             f"{get_entity_id(m, text.text_id)})"
@@ -132,7 +127,9 @@ def text_to_corefud(text: Text) -> list[TokenList]:
         if seg.last_in_sent:
             sentences.append(curr_sentence)
             curr_sentence = None
-
+    if curr_sentence:
+        sentences.append(curr_sentence)
+        curr_sentence = None
     # for every sentence:
         #  - sentence_id
         # - full sentence text (spaced)

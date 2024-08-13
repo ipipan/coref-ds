@@ -68,11 +68,16 @@ class CorefUDDoc:
     def text(self) -> Text:
         if len(self.udapi_docs) == 1:
             doc = self.udapi_docs[0]
+            segment_ind = 0
             segments_meta = []
-            for ind, node in enumerate(doc.nodes_and_empty):
-                segments_meta.append(
-                    node_to_segment(node, ind)
-                )
+            for sentence in doc.trees:
+                words = list(sentence.descendants)
+                for w_ind, w in enumerate(words):
+                    last_in_sent = w_ind == len(words) - 1
+                    segments_meta.append(
+                        node_to_segment(w, segment_ind, last_in_sent=last_in_sent)
+                    )
+                    segment_ind += 1
 
             text_id = Path(doc.meta.get('docname', self.doc_path.name)).stem.split('_')[0]
             cluster_mapping = clusters_from_doc(doc, segments_meta)

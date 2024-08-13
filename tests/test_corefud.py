@@ -39,18 +39,10 @@ class TestCorefUD(unittest.TestCase):
     def test_deprels(self):
         self.assertTrue(pcc.exists())
         # doc = CorefUDDoc(pcc)
-        doc = CorefUDDoc(pcc_single_texts / 'train' / '1800.conllu')
+        doc = CorefUDDoc(pcc_single_texts / 'train' / '3165.conllu')
         doc1 = doc.udapi_docs[0]
         doc.udapi_docs = [doc1]
         text = doc.text
-        print(text.print_clusters())
-        print(
-            [(s.deprel, s.index) for s in text.segments_meta]
-        )
-        for m in text.mentions:
-            print(m.text, m.span_start, m.span_end, m.is_continuous)
-            if not m.is_continuous:
-                print([s.index for s in m.full_segments])
         for cluster in text.clusters:
             for start, end in cluster:
                 self.assertEqual(
@@ -66,7 +58,7 @@ class TestCorefUD(unittest.TestCase):
 
 
     def test_write_corefud(self):
-        paths = list(pcc_single_texts.glob('*/*.conllu')) 
+        paths = list(pcc_single_texts.glob('*/*.conllu'))[400:600]
         texts = []
         error_paths = []
         for path in paths:

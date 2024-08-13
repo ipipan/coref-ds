@@ -81,7 +81,7 @@ def add_mention(
     mentions_set.add(mention)     
 
 
-def node_to_segment(node: udapi.core.node.Node, node_position_in_text: int = None) -> str:
+def node_to_segment(node: udapi.core.node.Node, node_position_in_text: int = None, last_in_sent: bool = False) -> str:
     try:
         prev_node = node.prev_node
     except IndexError:
@@ -102,12 +102,13 @@ def node_to_segment(node: udapi.core.node.Node, node_position_in_text: int = Non
         id=node.address(),
         deprel=node.deprel,
         index=node_position_in_text,
+        last_in_sent=last_in_sent,
     )
     return meta
 
 def clusters_from_doc(doc, segments):
     address2ind = {
-        node.address():ind for ind, node in enumerate(doc.nodes_and_empty)
+        node.address():ind for ind, node in enumerate(doc.nodes)
     }
     mentions = []
     clusters = defaultdict(list)
@@ -115,8 +116,11 @@ def clusters_from_doc(doc, segments):
         eid = ent.eid
         for men_ind, men in enumerate(ent.mentions):
             words = list(men.words)
-            start_ind = address2ind[words[0].address()]
-            end_ind = address2ind[words[-1].address()]
+            
+            start_ind = address2ind.get(words[0].address())
+            end_ind = address2ind.get(words[-1].address())
+            if start_ind is None or end_ind is None:
+                continue
             clusters[ent.eid].append(
                 (start_ind, end_ind)
             )
