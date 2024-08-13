@@ -105,7 +105,7 @@ def node_to_segment(node: udapi.core.node.Node, node_position_in_text: int = Non
     )
     return meta
 
-def clusters_from_doc(doc):
+def clusters_from_doc(doc, segments):
     address2ind = {
         node.address():ind for ind, node in enumerate(doc.nodes_and_empty)
     }
@@ -125,7 +125,7 @@ def clusters_from_doc(doc):
                     id=f"{eid}_{men_ind}",
                     text=' '.join([w.form for w in words]),
                     lemmatized_text=' '.join([w.lemma for w in words]),
-                    segments=[node_to_segment(n, address2ind[men.head.address()]) for n in words],
+                    segments=segments[start_ind:(end_ind+1)],
                     span_start=start_ind,
                     span_end=end_ind,
                     head=address2ind[men.head.address()],

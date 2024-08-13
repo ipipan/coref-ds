@@ -5,6 +5,7 @@ from pathlib import Path
 from dotenv import dotenv_values
 
 from coref_ds.corefud.corefud_doc import CorefUDDoc
+from coref_ds.corefud.corefud_writer import write_corefud
 
 local_config = dotenv_values(".env")
 
@@ -37,7 +38,8 @@ class TestCorefUD(unittest.TestCase):
 
     def test_deprels(self):
         self.assertTrue(pcc.exists())
-        doc = CorefUDDoc(pcc)
+        # doc = CorefUDDoc(pcc)
+        doc = CorefUDDoc(pcc_single_texts / 'train' / '1800.conllu')
         doc1 = doc.udapi_docs[0]
         doc.udapi_docs = [doc1]
         text = doc.text
@@ -45,6 +47,10 @@ class TestCorefUD(unittest.TestCase):
         print(
             [(s.deprel, s.index) for s in text.segments_meta]
         )
+        for m in text.mentions:
+            print(m.text, m.span_start, m.span_end, m.is_continuous)
+            if not m.is_continuous:
+                print([s.index for s in m.full_segments])
         for cluster in text.clusters:
             for start, end in cluster:
                 self.assertEqual(
@@ -56,6 +62,25 @@ class TestCorefUD(unittest.TestCase):
                     'cluster indices': [start, end],
                     'text': ' '.join(text.segments[start:(end+1)])
                 })
+
+
+
+    def test_write_corefud(self):
+        paths = list(pcc_single_texts.glob('*/*.conllu')) 
+        texts = []
+        error_paths = []
+        for path in paths:
+            print(path)
+            try:
+                doc = CorefUDDoc(path)
+                text = doc.text
+                texts.append(text)
+            except Exception as e:
+                error_paths.append(path)
+                raise e
+        print(len(error_paths))
+        write_corefud(texts, 'testing_corefud.conllu')
+
 
     def test_all_texts(self):
         paths = list(pcc_single_texts.glob('*/*.conllu'))

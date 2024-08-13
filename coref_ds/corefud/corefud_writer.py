@@ -171,14 +171,15 @@ def texts_to_corefud(texts: list[Text]):
         text_sents = text_to_corefud(text)
         lines.extend([
             f"# newdoc id = {gen_full_text_id(text)}",
+            "\n",
             f"# {entity_metadata}"
         ])
         for token_list in text_sents:
             lines.append(token_list.serialize())
 
-    return "\n".join(lines) + "\n"
+    return ''.join(lines) + "\n"
 
 
-def write_cofefud(texts: list[Text], p: Path):
+def write_corefud(texts: list[Text], p: Path):
     with open(p, "w") as f:
         f.write(texts_to_corefud(texts))

@@ -73,9 +73,11 @@ class CorefUDDoc:
                 segments_meta.append(
                     node_to_segment(node, ind)
                 )
-            cluster_mapping = clusters_from_doc(doc)
+
+            text_id = Path(doc.meta.get('docname', self.doc_path.name)).stem.split('_')[0]
+            cluster_mapping = clusters_from_doc(doc, segments_meta)
             text = Text(
-                text_id=doc.meta.get('docname', self.doc_path.name),
+                text_id=text_id,
                 segments=[n.form for n in doc.nodes_and_empty],
                 segments_meta=segments_meta,
                 clusters=cluster_mapping['clusters'],
