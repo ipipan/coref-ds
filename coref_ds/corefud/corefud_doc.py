@@ -83,7 +83,7 @@ class CorefUDDoc:
             cluster_mapping = clusters_from_doc(doc, segments_meta)
             text = Text(
                 text_id=text_id,
-                segments=[n.form for n in doc.nodes_and_empty],
+                segments=[n.form for n in doc.nodes],
                 segments_meta=segments_meta,
                 clusters=cluster_mapping['clusters'],
                 mentions=cluster_mapping['mentions'],
