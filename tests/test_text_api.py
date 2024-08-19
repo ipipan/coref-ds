@@ -14,6 +14,7 @@ from coref_ds.utils import count_mentions
 local_config = dotenv_values(".env")
 
 from coref_ds.tei.tei_doc import TEIDocument
+from coref_ds.corefud.corefud_doc import CorefUDDoc
 
 layers_mapping = {
     'text_structure': (PCCStructureLayer, 'text'),
@@ -135,6 +136,14 @@ class TestTextAPI(unittest.TestCase):
             text.find_agglutinants()
             merged_mentions = text.merge_agglutinative_mentions()
             self.assertEqual(len(merged_mentions), 0)
+
+    def test_aglutinants_corefud(self):
+            tei_doc = CorefUDDoc(
+                Path(local_config['PCC_COREFUD_SINGLE_TEXTS']) / 'train' / '478.conllu',
+            )
+            text = tei_doc.text
+            merged_mentions = text.merge_agglutinative_mentions(verbose=True)
+            self.assertEqual(len(merged_mentions), 3)
 
     def test_aglutinants_whole_dataset(self):
             for p in (Path(local_config['PCC_ROOT']) / 'train').iterdir():

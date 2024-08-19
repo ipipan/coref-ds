@@ -205,7 +205,9 @@ class Text:
             if (
                 seg.pos not in c_tags and
                 self.segments_meta[next_token_ind].pos not in c_tags and
-                self.segments_meta[next_token_ind].has_nps is True
+                (self.segments_meta[next_token_ind].has_nps is True or
+                 self.segments_meta[next_token_ind].orth in {'eś', 'ś', 'śmy', 'ście', 'by', 'M', 'm', 'em', 'ń', 'by', 'BY', 'aś'}
+                )
             ):
                 agglutinative_phrases.add(next_token_ind)
 
