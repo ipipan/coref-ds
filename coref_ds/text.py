@@ -19,6 +19,7 @@ class Segment:
     gender: str | None = None
     person: str | None = None
     deprel: str | None = None
+    dep_head: int | None = None
     id: str | None = None
     is_semantic_head: bool | None = None
 

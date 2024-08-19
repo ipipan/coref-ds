@@ -81,7 +81,7 @@ def add_mention(
     mentions_set.add(mention)     
 
 
-def node_to_segment(node: udapi.core.node.Node, node_position_in_text: int = None, last_in_sent: bool = False) -> str:
+def node_to_segment(node: udapi.core.node.Node, node_position_in_text: int = None, last_in_sent: bool = False, words_addresses: dict = None) -> str:
     try:
         prev_node = node.prev_node
     except IndexError:
@@ -94,6 +94,14 @@ def node_to_segment(node: udapi.core.node.Node, node_position_in_text: int = Non
     else:
         has_nps = prev_node.no_space_after if prev_node else False
 
+    if words_addresses and node.parent:
+        if node.deprel == 'root':
+            dep_head = 0
+        else:
+            dep_head = words_addresses.get(node.parent.address()) + 1
+    else:
+        dep_head = '_'
+
     meta = Segment(
         orth=node.form,
         lemma=node.lemma,
@@ -101,6 +109,7 @@ def node_to_segment(node: udapi.core.node.Node, node_position_in_text: int = Non
         pos=node.upos,
         id=node.address(),
         deprel=node.deprel,
+        dep_head=dep_head,
         index=node_position_in_text,
         last_in_sent=last_in_sent,
     )

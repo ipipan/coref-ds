@@ -148,8 +148,8 @@ def text_to_corefud(text: Text) -> list[TokenList]:
                 "upostag": '_',
                 "xpostag": seg.pos,
                 "feats": '_',  # update from gender, number, person
-                "head": '_',
-                "deprel": '_',
+                "head": seg.dep_head if seg.dep_head else '_',
+                "deprel": seg.deprel.lower() if seg.deprel else '_',
                 "deps": '_',
                 "misc": misc,
             })

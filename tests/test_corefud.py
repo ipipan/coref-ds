@@ -55,6 +55,9 @@ class TestCorefUD(unittest.TestCase):
                     'text': ' '.join(text.segments[start:(end+1)])
                 })
 
+        for seg in text.segments_meta:
+            print(seg.orth, seg.dep_head, seg.deprel)
+
 
 
     def test_write_corefud(self):

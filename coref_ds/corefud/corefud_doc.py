@@ -72,10 +72,11 @@ class CorefUDDoc:
             segments_meta = []
             for sentence in doc.trees:
                 words = list(sentence.descendants)
+                words_addresses = {w.address():w_ind for w_ind, w in enumerate(words)}
                 for w_ind, w in enumerate(words):
                     last_in_sent = w_ind == len(words) - 1
                     segments_meta.append(
-                        node_to_segment(w, segment_ind, last_in_sent=last_in_sent)
+                        node_to_segment(w, segment_ind, last_in_sent=last_in_sent, words_addresses=words_addresses)
                     )
                     segment_ind += 1
 
