@@ -224,6 +224,7 @@ class Text:
             if first_segment.index in agg_indices:
                 to_print = [mention.text]
                 new_start_ind = first_segment.index - 1
+                mention.segments[0].has_nps = True
                 seg_to_add = self.segments_meta[new_start_ind]
                 mention.segments.insert(0, seg_to_add)
                 mention.span_start = new_start_ind
