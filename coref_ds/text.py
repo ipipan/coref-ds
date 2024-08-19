@@ -235,7 +235,7 @@ class Text:
                 if verbose:
                     print(self.text_id, ' '.join(to_print))
 
-        new_clusters_dict[mention.cluster_id].append((mention.span_start, mention.span_end))
+            new_clusters_dict[mention.cluster_id].append((mention.span_start, mention.span_end))
 
         self.clusters = tuple(new_clusters_dict.values())
         return merged_mentions

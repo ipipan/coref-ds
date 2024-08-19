@@ -142,8 +142,14 @@ class TestTextAPI(unittest.TestCase):
                 Path(local_config['PCC_COREFUD_SINGLE_TEXTS']) / 'train' / '478.conllu',
             )
             text = tei_doc.text
+            print()
+            before_clusters = text.clusters
+            print('before: ', text.clusters)
             merged_mentions = text.merge_agglutinative_mentions(verbose=True)
+            after_clusters = text.clusters
+            print('after: ', text.clusters)
             self.assertEqual(len(merged_mentions), 3)
+            self.assertEqual(len(before_clusters), len(after_clusters))
 
     def test_aglutinants_whole_dataset(self):
             for p in (Path(local_config['PCC_ROOT']) / 'train').iterdir():
