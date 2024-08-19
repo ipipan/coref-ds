@@ -1,3 +1,4 @@
+from collections import defaultdict
 from dataclasses import dataclass, field
 import copy
 import re
@@ -217,6 +218,7 @@ class Text:
     def merge_agglutinative_mentions(self, verbose=False):
         agg_indices = self.find_agglutinants()
         merged_mentions = []
+        new_clusters_dict = defaultdict(list)
         for mention in self.mentions:
             first_segment = mention.segments[0]
             if first_segment.index in agg_indices:
@@ -230,7 +232,9 @@ class Text:
                 mention.__post_init__()
                 merged_mentions.append(mention)
                 to_print.append(mention.text.replace(" ", ""))
+                new_clusters_dict[mention.cluster_id].append((mention.span_start, mention.span_end))
                 if verbose:
                     print(self.text_id, ' '.join(to_print))
 
+        self.clusters = tuple(new_clusters_dict.values())
         return merged_mentions

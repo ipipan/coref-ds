@@ -143,6 +143,7 @@ def clusters_from_doc(doc, segments):
                     span_end=end_ind,
                     head=address2ind[men.head.address()],
                     head_orth=men.head.form,
+                    cluster_id=eid,
                 )
             )
 
