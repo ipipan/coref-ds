@@ -36,6 +36,18 @@ class TestCorefUD(unittest.TestCase):
         print(doc.text.print_clusters())
 
 
+    def test_nps(self):
+        self.assertTrue(pcc.exists())
+        # doc = CorefUDDoc(pcc)
+        doc = CorefUDDoc(pcc_single_texts / 'train' / '3165.conllu')
+        doc1 = doc.udapi_docs[0]
+        doc.udapi_docs = [doc1]
+        text = doc.text
+        print(text.segments)
+        print([(s.orth, s.has_nps) for s in text.segments_meta[:10]])
+        self.assertTrue(text.segments_meta[1].has_nps)
+        self.assertFalse(text.segments_meta[0].has_nps)
+
     def test_deprels(self):
         self.assertTrue(pcc.exists())
         # doc = CorefUDDoc(pcc)
